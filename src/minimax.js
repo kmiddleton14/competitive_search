@@ -109,15 +109,38 @@ to have longer lines than shorter lines.
 You'll want to pass the tests defined in minimax_specs.js.
 */
 var heuristic = function(state, maximizingPlayer){
+	// MAXIMIZING PLAYER IS O !!!! NOT X
 
+	var result = 0;
 	//This is how you can retrieve the minimizing player.
     var minimizingPlayer = (maximizingPlayer == 'x') ? 'o' : 'x';
 
+
 	//An example.
     var linesOfLengthTwoForX = state.numLines(2, 'x')
+    var linesOfLengthTwoForO = state.numLines(2, 'o')
 
-    //Your code here.  Don't return random, obviously.
-	return Math.random()
+    var linesOfLengthThreeForO = state.numLines(3, 'o')
+    var linesOfLengthThreeForX = state.numLines(3, 'x')
+
+    //var linesOfLengthFourForX = state.numLines(4, 'o')
+
+    //punishment
+    if(linesOfLengthTwoForX > linesOfLengthTwoForO) result-= 25;
+	if(linesOfLengthThreeForX > linesOfLengthThreeForO) result-= 25;
+
+	if(linesOfLengthThreeForX >= 1) result-= 100;
+	if(linesOfLengthTwoForX >= 1) result -= 25;
+
+	//rewards
+	if(linesOfLengthThreeForO >= 1) result += 100;
+	if(linesOfLengthTwoForO >= 1) result += 25;
+	if(linesOfLengthTwoForX <= linesOfLengthTwoForO) result+= 25;
+	if(linesOfLengthThreeForX <= linesOfLengthThreeForO) result+= 50;
+
+    if(maximizingPlayer === 'x') return -result
+    
+	return result;
 }
 
 
@@ -145,8 +168,21 @@ var minimax = function(state, depth, maximizingPlayer){
 	var minimizingPlayer = (state.maximizingPlayer == 'x') ? 'o' : 'x';
 	var possibleStates = state.nextStates();
 	var currentPlayer = state.nextMovePlayer;
+	var result;
+
+	result = heuristic(state, maximizingPlayer)
+
+	if(depth === 0) return result;
+	if(possibleStates.length === 0) return result;
+
+	for (var i = 0; i < possibleStates.length; i++) {
+		return minimax(possibleStates[i], --depth, minimizingPlayer)
+	}
+	
+
+
 	//Your code here.
-	return Math.random();
+	//return result;
 }
 
 
